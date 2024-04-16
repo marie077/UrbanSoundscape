@@ -1,7 +1,7 @@
 //Serial communicator variables
 let serial; //variable for serial object
 // let latestData = ""; //variable holds data
-let latestData;
+let latestData = "";
 
 //ripple variables
 var outerDiam = 0;
@@ -11,9 +11,11 @@ let b = 140;
 let xoff = 0.0;
 let yoff = 0.0;
 
-//instances of ripples
+//instances of ripples / postcards
 // five instances each representing a building - for now 2 instances
-let instances = [{name: 'ga aquarium', x: 159, y: 369, outerDiam: 0, inputPin: 9}, {name: 'high museum', x: 368, y: 450, outerDiam: 0, inputPin: 11}];
+//TODO: include postcard data later
+let aquarium = {name:'aquarium', x: 159, y: 369, outerDiam: 0, inputPin: 0};
+let cokeMuseum = {name: 'coke museum', x: 500, y: 200, outerDiam: 0, inputPin: 1};
 
 //postcard animation variables
 let postcard_x = 30;
@@ -26,7 +28,7 @@ let width = 780;
 let height = 512;
 let alpha = 0;
 // let blendFactor = 0;
-let x = 200;
+// let x = 200;
 
 
 function setup() { 
@@ -48,53 +50,49 @@ function setup() {
 
 function draw() { 
   background('0xFFFFFF');
-  // translate(width/2, height/2);
+  //if data exists
   if (latestData) {
-    for (let i = 0; i < instances.length; i++) {
-      // if building is selected
-      if (instances[i].inputPin == latestData) {
-        translate(instances[i].x, instances[i].y);
-        wavyCircle(outerDiam, r, g, b);
-        noStroke();
-        image(postcard_front, postcard_x, postcard_y);
-
-        if (flipped) {
-            image(postcard_back, postcard_x, postcard_y);
-        }
-        fill(80, 80, 80, alpha);
-        rect(30, 30, width, height);
-        // if sensor passes threshold, set animate to true
-        // currently simulated with button press
-        if (keyIsPressed) {
-            animate = true;
-            alpha = 200;
-        }
-
-        if (animate) {
-            alpha -= 1;
-            flipped = true;
-        }
-      }
-      r = 210;
-      g = 180;
-      b = 140;
+    console.log('data exists');
+    switch(latestData) {
+      case '0': //aquarium
+        console.log('aquarium');
+        translate(aquarium.x, aquarium.y);
+        wavyCircle(aquarium.outerDiam, r, g, b);
+        triggerPostCard(aquarium.x - 250, aquarium.y - 200);
+        break;
+      case '1': //coke museum
+        console.log('coke museum');
+        translate(cokeMuseum.x, cokeMuseum.y);
+        wavyCircle(cokeMuseum.outerDiam, r, g, b);
+        triggerPostCard(cokeMuseum.x - 250, cokeMuseum.y - 200);
+        break;
+      case '2':
+        break;
+      case '3':
+        break;
+      case '4':
+        break;
+      case '5':
+        break;
+      default:
+        console.log("no matches to input pin");
     }
   }
 }
 
 function wavyCircle(diam, r, g, b) {
   console.log('drawing the ripple');
-  // r = 210;
-  // g = 180;
-  // b = 140;
+  let tempr = r;
+  let tempg = g;
+  let tempb = b;
   
   for (var i = 0; i < 5; i++){
     diam = outerDiam - 30 * i;    
     if (diam > 0){
-      r = map(r + diam, 0, width, 210, 250);
-      g = map(g + diam, 0, width, 180, 250);
-      b = map(b + diam, 0, width, 140, 250);
-      stroke(r, g, b);
+      tempr = map(tempr + diam, 0, width, 210, 250);
+      tempg = map(tempg + diam, 0, width, 180, 250);
+      tempb = map(tempb + diam, 0, width, 140, 250);
+      stroke(tempr, tempg, tempb);
       strokeWeight(5);
       noFill();
       let radius = diam/2;
@@ -114,6 +112,27 @@ function wavyCircle(diam, r, g, b) {
   console.log('ripple drawn');
 }
 
+function triggerPostCard(x, y) {
+  noStroke();
+  image(postcard_front, x, y, 300, 200);
+
+  if (flipped) {
+      image(postcard_back, x, y, 300, 200);
+  }
+  fill(80, 80, 80, alpha);
+  rect(x, y, 300, 200);
+  // if sensor passes threshold, set animate to true
+  // currently simulated with button press
+  if (keyIsPressed) {
+      animate = true;
+      alpha = 200;
+  }
+
+  if (animate) {
+      alpha -= 1;
+      flipped = true;
+  }
+}
 // animate the flip over
 function animateFlip() {
 	// Draw the transition video
