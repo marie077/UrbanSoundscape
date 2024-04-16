@@ -14,25 +14,35 @@ let yoff = 0.0;
 //instances of ripples / postcards
 // five instances each representing a building - for now 2 instances
 //TODO: include postcard data later
-let aquarium = {name:'aquarium', x: 159, y: 369, outerDiam: 0, inputPin: 0};
-let cokeMuseum = {name: 'coke museum', x: 500, y: 200, outerDiam: 0, inputPin: 1};
+let aquarium = {name:'aquarium', x: 400, y: 500, outerDiam: 0, inputPin: 0};
+let cokeMuseum = {name: 'coke museum', x: 700, y: 100, outerDiam: 0, inputPin: 1};
 
 //postcard animation variables
-let postcard_x = 30;
-let postcard_y = 30;
-let postcard_front;
-let postcard_back;
-let animate = false; // change when plucked
-let flipped = false; // change when plucked
-let width = 780;
-let height = 512;
-let alpha = 0;
-// let blendFactor = 0;
-// let x = 200;
+let video;
 
+let sound1, sound2, sound3, sound4, sound5, sound6;
+
+function preload() {
+  // soundFormats('mp3', 'ogg');
+  // sound1 = loadSound('assets/Sounds/Chord1');
+  // sound2 = loadSound('assets/Sounds/Chord2.mp3');
+  // sound3 = loadSound('assets/Sounds/Chord3.mp3');
+  // sound4 = loadSound('assets/Sounds/Chord4.mp3');
+  // sound5 = loadSound('assets/Sounds/Chord5.mp3');
+  // sound6 = loadSound('assets/Sounds/Chord6.mp3');
+
+  video = createVideo('assets/postcard.mp4');
+  console.log('video loaded');
+}
 
 function setup() { 
   createCanvas(windowWidth, windowHeight);
+  bg = loadImage('assets/background.png');
+  //initialize video hide
+  video.hide();
+  video.play();  
+  video.volume(0);
+  video.autoplay();
   // serial constructor
   serial = new p5.SerialPort();
   serial.list();
@@ -42,29 +52,29 @@ function setup() {
   //change this to your port name - adjust
   serial.open('COM5', options);
   serial.on('data', serialEvent);
-  
-  //postcard load
-  postcard_front = loadImage("./postcard-front.jpg");
-  postcard_back = loadImage("./postcard-back.jpg");
 } 
 
 function draw() { 
-  background('0xFFFFFF');
+  background(bg);
+  
   //if data exists
   if (latestData) {
     console.log('data exists');
     switch(latestData) {
-      case '0': //aquarium
+      case '1': //aquarium
         console.log('aquarium');
         translate(aquarium.x, aquarium.y);
-        wavyCircle(aquarium.outerDiam, r, g, b);
-        triggerPostCard(aquarium.x - 250, aquarium.y - 200);
+        wavyCircle(r, g, b);
+        rotate(HALF_PI/2);
+        image(video, aquarium.x - 500, aquarium.y - 350, 200, 100); // Adjust position based on rotation
         break;
-      case '1': //coke museum
+      case '0': //coke museum
         console.log('coke museum');
         translate(cokeMuseum.x, cokeMuseum.y);
-        wavyCircle(cokeMuseum.outerDiam, r, g, b);
-        triggerPostCard(cokeMuseum.x - 250, cokeMuseum.y - 200);
+        wavyCircle(r, g, b);
+        rotate(HALF_PI * 1.68);
+        console.log(cokeMuseum.x, cokeMuseum.y);
+        image(video, cokeMuseum.x - 900, cokeMuseum.y - 260, 200, 100);   
         break;
       case '2':
         break;
@@ -76,25 +86,27 @@ function draw() {
         break;
       default:
         console.log("no matches to input pin");
+        video.hide();
     }
+  } else {
+    video.hide();
   }
 }
 
-function wavyCircle(diam, r, g, b) {
+function wavyCircle(r, g, b) {
   console.log('drawing the ripple');
-  let tempr = r;
-  let tempg = g;
-  let tempb = b;
   
   for (var i = 0; i < 5; i++){
-    diam = outerDiam - 30 * i;    
+    let diam = outerDiam - 30 * i;    
     if (diam > 0){
-      tempr = map(tempr + diam, 0, width, 210, 250);
-      tempg = map(tempg + diam, 0, width, 180, 250);
-      tempb = map(tempb + diam, 0, width, 140, 250);
-      stroke(tempr, tempg, tempb);
-      strokeWeight(5);
+      tempr = r;
+      tempg = g;
+      tempb = b;
       noFill();
+      let alpha = map(diam, 0, 300, 255, 0);
+      stroke(r, g, b, alpha);
+      strokeWeight(5);
+      // alpha(alpha);
       let radius = diam/2;
       beginShape();
       for (let i  = 0; i <= 360; i++) {
@@ -108,34 +120,8 @@ function wavyCircle(diam, r, g, b) {
       yoff += 0.04;
     }
   }
-  outerDiam += 6;
+  outerDiam += 5;
   console.log('ripple drawn');
-}
-
-function triggerPostCard(x, y) {
-  noStroke();
-  image(postcard_front, x, y, 300, 200);
-
-  if (flipped) {
-      image(postcard_back, x, y, 300, 200);
-  }
-  fill(80, 80, 80, alpha);
-  rect(x, y, 300, 200);
-  // if sensor passes threshold, set animate to true
-  // currently simulated with button press
-  if (keyIsPressed) {
-      animate = true;
-      alpha = 200;
-  }
-
-  if (animate) {
-      alpha -= 1;
-      flipped = true;
-  }
-}
-// animate the flip over
-function animateFlip() {
-	// Draw the transition video
 }
 
 function serialEvent() {
