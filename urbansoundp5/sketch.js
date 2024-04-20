@@ -2,6 +2,7 @@
 let serial; //variable for serial object
 // let latestData = ""; //variable holds data
 let latestData = "";
+let audioPlayed = false;
 
 //ripple variables
 var outerDiam = 0;
@@ -14,8 +15,8 @@ let yoff = 0.0;
 //instances of ripples / postcards
 // five instances each representing a building - for now 2 instances
 //TODO: include postcard data later
-let aquarium = {name:'aquarium', x: 400, y: 500, outerDiam: 0, inputPin: 0};
-let cokeMuseum = {name: 'coke museum', x: 700, y: 100, outerDiam: 0, inputPin: 1};
+let aquarium = {name:'aquarium', x: 400, y: 500};
+let cokeMuseum = {name: 'coke museum', x: 700, y: 100};
 
 //postcard animation variables
 let video;
@@ -23,13 +24,13 @@ let video;
 let sound1, sound2, sound3, sound4, sound5, sound6;
 
 function preload() {
-  // soundFormats('mp3', 'ogg');
-  // sound1 = loadSound('assets/Sounds/Chord1');
-  // sound2 = loadSound('assets/Sounds/Chord2.mp3');
-  // sound3 = loadSound('assets/Sounds/Chord3.mp3');
-  // sound4 = loadSound('assets/Sounds/Chord4.mp3');
-  // sound5 = loadSound('assets/Sounds/Chord5.mp3');
-  // sound6 = loadSound('assets/Sounds/Chord6.mp3');
+  soundFormats('mp3', 'ogg');
+  sound1 = loadSound('assets/Sounds/Chord1');
+  sound2 = loadSound('assets/Sounds/Chord2.mp3');
+  sound3 = loadSound('assets/Sounds/Chord3.mp3');
+  sound4 = loadSound('assets/Sounds/Chord4.mp3');
+  sound5 = loadSound('assets/Sounds/Chord5.mp3');
+  sound6 = loadSound('assets/Sounds/Chord6.mp3');
 
   video = createVideo('assets/postcard.mp4');
   console.log('video loaded');
@@ -52,6 +53,14 @@ function setup() {
   //change this to your port name - adjust
   serial.open('COM5', options);
   serial.on('data', serialEvent);
+
+  //silent buffer for audio
+  audioContext = getAudioContext();
+  silentBuffer = audioContext.createBuffer(1, 1, 22050);
+  let source = audioContext.createBufferSource();
+  source.buffer = silentBuffer;
+  source.connect(audioContext.destination);
+  source.start();
 } 
 
 function draw() { 
@@ -67,6 +76,8 @@ function draw() {
         wavyCircle(r, g, b);
         rotate(HALF_PI/2);
         image(video, aquarium.x - 500, aquarium.y - 350, 200, 100); // Adjust position based on rotation
+        console.log(audioPlayed);
+        sound1.play();
         break;
       case '0': //coke museum
         console.log('coke museum');
@@ -74,7 +85,8 @@ function draw() {
         wavyCircle(r, g, b);
         rotate(HALF_PI * 1.68);
         console.log(cokeMuseum.x, cokeMuseum.y);
-        image(video, cokeMuseum.x - 900, cokeMuseum.y - 260, 200, 100);   
+        image(video, cokeMuseum.x - 900, cokeMuseum.y - 260, 200, 100);
+        sound2.play();
         break;
       case '2':
         break;
@@ -87,9 +99,14 @@ function draw() {
       default:
         console.log("no matches to input pin");
         video.hide();
+        sound1.pause();
+        sound2.pause();
     }
   } else {
+    audioPlayed = false;
     video.hide();
+    sound1.pause();
+    sound2.pause();
   }
 }
 
