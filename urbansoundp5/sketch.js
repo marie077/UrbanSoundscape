@@ -1,8 +1,6 @@
 //Serial communicator variables
 let serial; //variable for serial object
-// let latestData = ""; //variable holds data
-let latestData = "";
-let audioPlayed = false;
+let latestData;
 
 //ripple variables
 var outerDiam = 0;
@@ -80,6 +78,7 @@ function preload() {
 }
 
 function setup() {
+  
 	createCanvas(1920, 1080);
 	bg = loadImage("assets/background.png");
 	coke_curr = coke_front;
@@ -95,7 +94,7 @@ function setup() {
 	let options = { baudrate: 9600 };
 
 	//change this to your port name - adjust
-	serial.open("COM5", options);
+	serial.open("COM6", options);
 	serial.on("data", serialEvent);
 }
 
@@ -104,9 +103,9 @@ function draw() {
 	image(coke_curr, cokeMuseum.x, cokeMuseum.y, postcard_width, postcard_height);
 
 	//if data exists
-	if (latestData) {
+	if (latestData > 0) {
 		// console.log("data exists");
-		console.log(latestData);
+		// console.log(latestData);
 		switch (latestData) {
 			case 1: //coke museum
 				// console.log("coke museum");
@@ -117,26 +116,26 @@ function draw() {
 				// image(video, cokeMuseum.x - 900, cokeMuseum.y - 260, 200, 100);
 				flip("coke");
 				// coke_curr = coke_back;
-				wavyCircle(r, g, b);
-			// sound2.play();
-			case 0: //aquarium
-				// console.log("aquarium");
-				translate(aquarium.x, aquarium.y);
-				wavyCircle(r, g, b);
-				rotate(HALF_PI / 2);
-
-				// image(video, aquarium.x - 500, aquarium.y - 350, 200, 100); // Adjust position based on rotation
+				wavyCircle(r, g, b, cokeMuseum.x, cokeMuseum.y);
 				sound1.play();
+				latestData = 0;
 				break;
-
-				break;
-			case 2:
+			case 2: //aquarium
+				// console.log("aquarium");
+				// translate(aquarium.x, aquarium.y);
+				wavyCircle(r, g, b, aquarium.x, aquarium.y);
+				rotate(HALF_PI / 2);
+				// image(video, aquarium.x - 500, aquarium.y - 350, 200, 100); // Adjust position based on rotation
+				sound2.play();
+				latestData = 0;
 				break;
 			case 3:
 				break;
 			case 4:
 				break;
 			case 5:
+				break;
+			case 6:
 				break;
 			default:
 				// console.log("no matches to input pin");
@@ -157,9 +156,9 @@ function flip(card) {
 	// }, 2000);
 }
 
-function wavyCircle(r, g, b) {
-	// console.log("drawing the ripple");
-
+function wavyCircle(r, g, b, x, y) {
+	console.log("drawing the ripple");
+	translate(x, y);
 	for (var i = 0; i < 5; i++) {
 		let diam = outerDiam - 30 * i;
 		if (diam > 0) {
@@ -189,11 +188,16 @@ function wavyCircle(r, g, b) {
 }
 
 function serialEvent() {
-	let currentString = serial.readLine(); // store the data in a variable
-	trim(currentString); // get rid of whitespace
-	if (!currentString) return; // if there's nothing in there, ignore it
-	// console.log(currentString); // print it out
-	latestData = currentString; // save it to the global variable
+	let currentString = serial.readBytes(); // store the data in a variable
+	// trim(currentString); // get rid of whitespace
+	let value;
+	if (currentString.length > 0) {
+		for (let i = 0; i < currentString.length; i++) {
+			value = currentString[i];
+		}
+	}
+	console.log(value);
+	latestData = value;
 }
 
 function mousePressed() {
