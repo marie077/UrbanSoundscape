@@ -2,6 +2,7 @@
 let serial; //variable for serial object
 // let latestData = ""; //variable holds data
 let latestData = "";
+let audioPlayed = false;
 
 //ripple variables
 var outerDiam = 0;

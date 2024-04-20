@@ -58,6 +58,8 @@ void loop() {
     }
     //if it *was* touched and now *isnt*, alert!
     if (!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ) {
+      // sending an empty string because now it's not touched anymore...
+      Serial.println("");
       // Serial.println(cap.touched());
     }
   }
