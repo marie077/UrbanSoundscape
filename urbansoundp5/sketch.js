@@ -1,8 +1,6 @@
 //Serial communicator variables
 let serial; //variable for serial object
-// let latestData = ""; //variable holds data
 let latestData;
-let audioPlayed = false;
 
 //ripple variables
 var outerDiam = 0;
@@ -38,16 +36,16 @@ let video;
 
 let sound1, sound2, sound3, sound4, sound5, sound6, soundTest;
 
-// setTimeout(simulateData, 4000);
+setTimeout(simulateData, 4000);
 
-// function simulateData() {
-// 	latestData = 1;
-// 	// if (latestData < 4) {
-// 	// 	latestData += 1;
-// 	// } else {
-// 	// 	latestData = 0;
-// 	// }
-// }
+function simulateData() {
+	latestData = 1;
+	// if (latestData < 4) {
+	// 	latestData += 1;
+	// } else {
+	// 	latestData = 0;
+	// }
+}
 
 function preload() {
 	// soundFormats('mp3', 'ogg');
@@ -80,8 +78,8 @@ function preload() {
 }
 
 function setup() {
-	createCanvas(windowWidth, windowHeight);
-	// createCanvas(1920, 1080);
+  
+	createCanvas(1920, 1080);
 	bg = loadImage("assets/background.png");
 	coke_curr = coke_front;
 	//initialize video hide
@@ -143,9 +141,6 @@ function draw() {
 				// console.log("no matches to input pin");
 				video.hide();
 		}
-
-		// ideally once the postcard animation happens it should reset the latest data so it doesn't loop
-		// latestData = '';
 	} else {
 		video.hide();
 	}
@@ -201,16 +196,8 @@ function serialEvent() {
 			value = currentString[i];
 		}
 	}
-
 	console.log(value);
 	latestData = value;
-	// if (!currentString) {
-	// 	console.log('nothing here');
-	// 	return;
-	// } // if there's nothing in there, ignore it
-	// console.log(currentString); // print it out
-	// latestData = currentString; // save it to the global variable
-	// console.log("stored data:" + latestData);
 }
 
 function mousePressed() {
