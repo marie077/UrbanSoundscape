@@ -2,16 +2,21 @@
 let serial; //variable for serial object
 
 // let latestData = ""; //variable holds data
-let latestData = 0;
+let latestData;
 let audioPlayed = false;
+let flipDelay = 10000;
 
 //ripple variables
 var outerDiam = 0;
-let r = 210;
-let g = 180;
-let b = 140;
+let r = 212;
+let g = 175;
+let b = 55;
+// let r = 210;
+// let g = 180;
+// let b = 140;
 let xoff = 0.0;
 let yoff = 0.0;
+
 
 let postcard_width = 334;
 let postcard_height = 193;
@@ -19,7 +24,7 @@ let postcard_height = 193;
 let bg;
 
 //instances of ripples / postcards
-// five instances each representing a building - for now 2 instances
+// five instances each representing a building
 //TODO: include postcard data later
 
 let aquarium = {
@@ -31,6 +36,7 @@ let aquarium = {
 	front: "",
 	back: "",
 	currImage: "",
+	currState: "front",
 };
 let coke = {
 	name: "Coke Museum",
@@ -41,6 +47,7 @@ let coke = {
 	front: "",
 	back: "",
 	currImage: "",
+	currState: "front",
 };
 let civil = {
 	name: "Civil Rights Museum",
@@ -48,6 +55,7 @@ let civil = {
 	y: 438,
 	outerDiam: 0,
 	inputPin: 1,
+	currState: "front",
 };
 let football = {
 	name: "Football Hall of Fame",
@@ -55,6 +63,7 @@ let football = {
 	y: 838,
 	outerDiam: 0,
 	inputPin: 1,
+	currState: "front",
 };
 let park = {
 	name: "Centennial Park",
@@ -62,6 +71,7 @@ let park = {
 	y: 589,
 	outerDiam: 0,
 	inputPin: 1,
+	currState: "front",
 };
 let wheel = {
 	name: "Ferris Wheel",
@@ -69,22 +79,25 @@ let wheel = {
 	y: 430,
 	outerDiam: 0,
 	inputPin: 1,
+	currState: "front",
 };
 
 //postcard animation variables
-let video;
 
 let sound1, sound2, sound3, sound4, sound5, sound6, soundTest;
 
-setInterval(simulateData, 1000);
+setInterval(simulateData, 2000);
 
 function simulateData() {
 	if (latestData < 6) {
 		latestData += 1;
+		audioPlayed = false;
+		outerDiam = 0;
 	} else {
 		latestData = 0;
 	}
-	console.log(latestData);
+	
+	// console.log(latestData);
 }
 
 function preload() {
@@ -97,9 +110,6 @@ function preload() {
 	sound6 = loadSound("assets/Sounds/Chord6.mp3");
 
 	soundTest = loadSound("assets/Sounds/progression.wav");
-
-	video = createVideo("assets/postcard.mp4");
-	// console.log("video loaded");
 
 	// preload postcard images
 	coke.front = loadImage("assets/coke-front.png");
@@ -133,11 +143,6 @@ function setup() {
 	park.currImage = park.front;
 	wheel.currImage = wheel.front;
 	football.currImage = football.front;
-	//initialize video hide
-	video.hide();
-	video.play();
-	video.volume(0);
-	video.autoplay();
 	// serial constructor
 	serial = new p5.SerialPort();
 	serial.list();
@@ -169,48 +174,111 @@ function draw() {
 		postcard_width,
 		postcard_height
 	);
-
-	//if data exists
-	if (latestData > 0) {
+    
+//if data exists
+	if (latestData !== 0) {
+		console.log("data in");
+		console.log("before reset:?" + latestData);
 		switch (latestData) {
 			case 1: //coke museum
-				flip(coke);
-				wavyCircle(r, g, b);
-			// sound2.play();
-			case 2: //aquarium
-				flip(civil);
-				wavyCircle(r, g, b);
-				// sound1.play();
+			console.log("in case 1");
+				wavyCircle(r, g, b, coke.x, coke.y);
+				if (coke.currState == "front") {
+					flip(coke);
+					setTimeout(()=> {
+						flip(coke);
+					}, flipDelay);
+				}
+				if (!audioPlayed) {
+					sound2.play();
+					audioPlayed = true;
+				}
+				console.log('reset:' + latestData);
 				break;
-			case 3: // civil
-				flip(aquarium);
-				wavyCircle(r, g, b);
+			case 2:
+			console.log("in case 2");
+				if (civil.currState == "front") {
+					flip(civil);
+					setTimeout(()=> {
+						flip(civil);
+					}, flipDelay);
+				}
+				wavyCircle(r, g, b, civil.x + 300, civil.y - 50);
+				if (!audioPlayed) {
+					sound1.play();
+					audioPlayed = true;
+				}
+				break;
+			case 3:
+			console.log("in case 3");
+				if (aquarium.currState == "front") {
+					flip(aquarium);
+					setTimeout(()=> {
+						flip(aquarium);
+					}, flipDelay);
+				}
+				wavyCircle(r, g, b, aquarium.x + 400, aquarium.y);
+				if (!audioPlayed) {
+					sound3.play();
+					audioPlayed = true;
+				}
 				break;
 			case 4: // football
-				flip(football);
-				wavyCircle(r, g, b);
+			console.log("in case 4");
+				if (football.currState == "front") {
+					flip(football);
+					setTimeout(()=> {
+						flip(football);
+					}, flipDelay);
+				}
+				wavyCircle(r, g, b, football.x + 25, football.y - 25);
+				if (!audioPlayed) {
+					sound4.play();
+					audioPlayed = true;
+				}
 				break;
 			case 5: // wheel
-				flip(wheel);
-				wavyCircle(r, g, b);
+			console.log('in case 5');
+				if (wheel.currState == "front") {
+					flip(wheel);
+					setTimeout(()=> {
+						flip(wheel);
+					}, flipDelay);
+				}
+				wavyCircle(r, g, b, wheel.x + 50, wheel.y - 50);
+				if (!audioPlayed) {
+					sound5.play();
+					audioPlayed = true;
+				}
 				break;
 			case 6: // park
-				flip(park);
-				wavyCircle(r, g, b);
-				break;
-			case 6:
+			console.log("in case 6");
+				if (park.currState == "front") {
+					flip(park);
+					setTimeout(()=> {
+						flip(park);
+					}, flipDelay);
+				}
+				wavyCircle(r, g, b, park.x + 80, park.y - 100);
+				if (!audioPlayed) {
+					sound6.play();
+					audioPlayed = true;
+				}
 				break;
 			default:
-				// console.log("no matches to input pin");
-				video.hide();
+				break;	
 		}
-	} else {
-		video.hide();
 	}
 }
 
 function flip(card) {
-	card.currImage = card.back;
+	if (card.currState == "front") {
+		card.currImage = card.back;
+		card.currState = "back";
+	} else {
+		card.currImage = card.front;
+		card.currState = "front";
+	}
 }
 
 function wavyCircle(r, g, b, x, y) {
@@ -237,10 +305,10 @@ function wavyCircle(r, g, b, x, y) {
 				vertex(xPoint, yPoint);
 			}
 			endShape(CLOSE);
-			yoff += 0.04;
+			yoff += 0.03;
 		}
 	}
-	outerDiam += 5;
+	outerDiam += 3;
 	// console.log("ripple drawn");
 }
 
@@ -254,6 +322,8 @@ function serialEvent() {
 		}
 	}
 	console.log(value);
+	//reset audioPlayed whenever there is new data
+	audioPlayed = false;
 	latestData = value;
 }
 
