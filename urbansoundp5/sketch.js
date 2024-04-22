@@ -1,5 +1,6 @@
 //Serial communicator variables
 let serial; //variable for serial object
+
 // let latestData = ""; //variable holds data
 let latestData = 0;
 let audioPlayed = false;
@@ -123,6 +124,7 @@ function preload() {
 }
 
 function setup() {
+  
 	createCanvas(1920, 1080);
 
 	coke.currImage = coke.front;
@@ -143,7 +145,7 @@ function setup() {
 	let options = { baudrate: 9600 };
 
 	//change this to your port name - adjust
-	serial.open("COM5", options);
+	serial.open("COM6", options);
 	serial.on("data", serialEvent);
 }
 
@@ -169,7 +171,7 @@ function draw() {
 	);
 
 	//if data exists
-	if (latestData) {
+	if (latestData > 0) {
 		switch (latestData) {
 			case 1: //coke museum
 				flip(coke);
@@ -196,6 +198,8 @@ function draw() {
 				flip(park);
 				wavyCircle(r, g, b);
 				break;
+			case 6:
+				break;
 			default:
 				// console.log("no matches to input pin");
 				video.hide();
@@ -209,9 +213,9 @@ function flip(card) {
 	card.currImage = card.back;
 }
 
-function wavyCircle(r, g, b) {
-	// console.log("drawing the ripple");
-
+function wavyCircle(r, g, b, x, y) {
+	console.log("drawing the ripple");
+	translate(x, y);
 	for (var i = 0; i < 5; i++) {
 		let diam = outerDiam - 30 * i;
 		if (diam > 0) {
@@ -241,11 +245,16 @@ function wavyCircle(r, g, b) {
 }
 
 function serialEvent() {
-	let currentString = serial.readLine(); // store the data in a variable
-	trim(currentString); // get rid of whitespace
-	if (!currentString) return; // if there's nothing in there, ignore it
-	// console.log(currentString); // print it out
-	latestData = currentString; // save it to the global variable
+	let currentString = serial.readBytes(); // store the data in a variable
+	// trim(currentString); // get rid of whitespace
+	let value;
+	if (currentString.length > 0) {
+		for (let i = 0; i < currentString.length; i++) {
+			value = currentString[i];
+		}
+	}
+	console.log(value);
+	latestData = value;
 }
 
 function mousePressed() {
