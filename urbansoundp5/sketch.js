@@ -86,19 +86,19 @@ let wheel = {
 
 let sound1, sound2, sound3, sound4, sound5, sound6, soundTest;
 
-setInterval(simulateData, 2000);
+// setInterval(simulateData, 2000);
 
-function simulateData() {
-	if (latestData < 6) {
-		latestData += 1;
-		audioPlayed = false;
-		outerDiam = 0;
-	} else {
-		latestData = 0;
-	}
+// function simulateData() {
+// 	if (latestData < 6) {
+// 		latestData += 1;
+// 		audioPlayed = false;
+// 		outerDiam = 0;
+// 	} else {
+// 		latestData = 0;
+// 	}
 	
-	// console.log(latestData);
-}
+// 	// console.log(latestData);
+// }
 
 function preload() {
 	// soundFormats('mp3', 'ogg');
@@ -324,6 +324,7 @@ function serialEvent() {
 	console.log(value);
 	//reset audioPlayed whenever there is new data
 	audioPlayed = false;
+	outerDiam = 0;
 	latestData = value;
 }
 
