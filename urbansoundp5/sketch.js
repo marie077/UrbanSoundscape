@@ -2,9 +2,9 @@
 let serial; //variable for serial object
 
 // let latestData = ""; //variable holds data
-let latestData;
+let latestData = 0;
 let audioPlayed = false;
-let flipDelay = 10000;
+let flipDelay = 15000;
 
 //ripple variables
 var outerDiam = 0;
@@ -320,12 +320,11 @@ function serialEvent() {
 		for (let i = 0; i < currentString.length; i++) {
 			value = currentString[i];
 		}
+		audioPlayed = false;
+		outerDiam = 0;
+		latestData = value;
 	}
-	console.log(value);
-	//reset audioPlayed whenever there is new data
-	audioPlayed = false;
-	outerDiam = 0;
-	latestData = value;
+	console.log(latestData);	
 }
 
 function mousePressed() {
