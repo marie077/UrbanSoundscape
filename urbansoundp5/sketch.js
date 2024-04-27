@@ -16,10 +16,13 @@ let b = 55;
 // let b = 140;
 let xoff = 0.0;
 let yoff = 0.0;
+let zoff = 0.0;
+let phase = 0.0;
+let maxNoise = 0.3;
 
 
-let postcard_width = 334;
-let postcard_height = 193;
+let postcard_width = 334/1.5;
+let postcard_height = 193/1.5;
 
 let bg;
 
@@ -27,10 +30,12 @@ let bg;
 // five instances each representing a building
 //TODO: include postcard data later
 
+let scale = 1.5;
+
 let aquarium = {
 	name: "Aquarium",
-	x: 177,
-	y: 809,
+	x: 156/scale,
+	y: 814/scale,
 	outerDiam: 0,
 	inputPin: 0,
 	front: "",
@@ -40,8 +45,8 @@ let aquarium = {
 };
 let coke = {
 	name: "Coke Museum",
-	x: 928,
-	y: 148,
+	x: 1000/scale,
+	y: 118/scale,
 	outerDiam: 0,
 	inputPin: 1,
 	front: "",
@@ -51,32 +56,32 @@ let coke = {
 };
 let civil = {
 	name: "Civil Rights Museum",
-	x: 10,
-	y: 438,
+	x: 36/scale,
+	y: 458/scale,
 	outerDiam: 0,
 	inputPin: 1,
 	currState: "front",
 };
 let football = {
 	name: "Football Hall of Fame",
-	x: 1254,
-	y: 838,
+	x: 1288/scale,
+	y: 858/scale,
 	outerDiam: 0,
 	inputPin: 1,
 	currState: "front",
 };
 let park = {
 	name: "Centennial Park",
-	x: 847,
-	y: 589,
+	x: 864/scale,
+	y: 560/scale,
 	outerDiam: 0,
 	inputPin: 1,
 	currState: "front",
 };
 let wheel = {
 	name: "Ferris Wheel",
-	x: 1576,
-	y: 430,
+	x: 1534/scale,
+	y: 514/scale,
 	outerDiam: 0,
 	inputPin: 1,
 	currState: "front",
@@ -86,7 +91,7 @@ let wheel = {
 
 let sound1, sound2, sound3, sound4, sound5, sound6, soundTest;
 
-// setInterval(simulateData, 2000);
+// setInterval(simulateData, 1000);
 
 // function simulateData() {
 // 	if (latestData < 6) {
@@ -135,7 +140,7 @@ function preload() {
 
 function setup() {
   
-	createCanvas(1920, 1080);
+	createCanvas(windowWidth, windowHeight);
 
 	coke.currImage = coke.front;
 	aquarium.currImage = aquarium.front;
@@ -150,7 +155,7 @@ function setup() {
 	let options = { baudrate: 9600 };
 
 	//change this to your port name - adjust
-	serial.open("COM6", options);
+	serial.open("COM9", options);
 	serial.on("data", serialEvent);
 }
 
@@ -182,7 +187,7 @@ function draw() {
 		switch (latestData) {
 			case 1: //coke museum
 			console.log("in case 1");
-				wavyCircle(r, g, b, coke.x, coke.y);
+				wavyCircle(r, g, b, coke.x - 50, coke.y + 30);
 				if (coke.currState == "front") {
 					flip(coke);
 					setTimeout(()=> {
@@ -203,7 +208,7 @@ function draw() {
 						flip(civil);
 					}, flipDelay);
 				}
-				wavyCircle(r, g, b, civil.x + 300, civil.y - 50);
+				wavyCircle(r, g, b, civil.x + 145, civil.y - 40);
 				if (!audioPlayed) {
 					sound1.play();
 					audioPlayed = true;
@@ -217,7 +222,7 @@ function draw() {
 						flip(aquarium);
 					}, flipDelay);
 				}
-				wavyCircle(r, g, b, aquarium.x + 400, aquarium.y);
+				wavyCircle(r, g, b, aquarium.x + 280, aquarium.y + 10);
 				if (!audioPlayed) {
 					sound3.play();
 					audioPlayed = true;
@@ -231,7 +236,7 @@ function draw() {
 						flip(football);
 					}, flipDelay);
 				}
-				wavyCircle(r, g, b, football.x + 25, football.y - 25);
+				wavyCircle(r, g, b, football.x - 10, football.y - 20);
 				if (!audioPlayed) {
 					sound4.play();
 					audioPlayed = true;
@@ -245,7 +250,7 @@ function draw() {
 						flip(wheel);
 					}, flipDelay);
 				}
-				wavyCircle(r, g, b, wheel.x + 50, wheel.y - 50);
+				wavyCircle(r, g, b, wheel.x + 40, wheel.y - 70);
 				if (!audioPlayed) {
 					sound5.play();
 					audioPlayed = true;
@@ -259,7 +264,7 @@ function draw() {
 						flip(park);
 					}, flipDelay);
 				}
-				wavyCircle(r, g, b, park.x + 80, park.y - 100);
+				wavyCircle(r, g, b, park.x + 45, park.y - 50);
 				if (!audioPlayed) {
 					sound6.play();
 					audioPlayed = true;
@@ -285,30 +290,34 @@ function wavyCircle(r, g, b, x, y) {
 	console.log("drawing the ripple");
 	translate(x, y);
 	for (var i = 0; i < 5; i++) {
-		let diam = outerDiam - 30 * i;
+		let diam = outerDiam - 20 * i;
 		if (diam > 0) {
 			tempr = r;
 			tempg = g;
 			tempb = b;
 			noFill();
-			let alpha = map(diam, 0, 300, 255, 0);
+			let alpha = map(diam, 0, 200, 255, 0);
 			stroke(r, g, b, alpha);
-			strokeWeight(5);
-			// alpha(alpha);
+			strokeWeight(2.5);
 			let radius = diam / 2;
 			beginShape();
-			for (let i = 0; i <= 360; i++) {
-				let angle = radians(i);
-				let noiseScale = map(noise(i * 0.006, yoff), 0, 1, -10, 10);
-				let xPoint = radius * cos(angle);
-				let yPoint = radius * sin(angle) + noiseScale;
+			for (let i = 0; i <= TWO_PI; i+=0.006) {
+				let xoff = map(cos(i + phase), -1, 1, 0, maxNoise);
+				let yoff =  map(sin(i), -1, 1, 0, maxNoise);
+				let noiseScale = map(noise(xoff, yoff, zoff), 0, 1, 10, 20);
+				let xPoint = radius * cos(i) + noiseScale;
+				let yPoint = radius * sin(i) + noiseScale;
 				vertex(xPoint, yPoint);
+				phase += 0.006;
+
+				// vertex(xPoint, yPoint);
 			}
 			endShape(CLOSE);
-			yoff += 0.03;
+			// yoff += 0.03;
+			zoff += 0.02;
 		}
 	}
-	outerDiam += 3;
+	outerDiam += 3.5;
 	// console.log("ripple drawn");
 }
 
