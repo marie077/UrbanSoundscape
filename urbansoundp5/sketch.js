@@ -4,7 +4,7 @@ let serial; //variable for serial object
 // let latestData = ""; //variable holds data
 let latestData = 0;
 let audioPlayed = false;
-let flipDelay = 1000;
+let flipDelay = 15000;
 
 //ripple variables
 var outerDiam = 0;
@@ -16,6 +16,9 @@ let b = 55;
 // let b = 140;
 let xoff = 0.0;
 let yoff = 0.0;
+let zoff = 0.0;
+let phase = 0.0;
+let maxNoise = 0.3;
 
 
 let postcard_width = 334/1.5;
@@ -285,33 +288,36 @@ function flip(card) {
 
 function wavyCircle(r, g, b, x, y) {
 	console.log("drawing the ripple");
-	// blur ripple
 	translate(x, y);
 	for (var i = 0; i < 5; i++) {
-		let diam = outerDiam - 30 * i;
+		let diam = outerDiam - 20 * i;
 		if (diam > 0) {
 			tempr = r;
 			tempg = g;
 			tempb = b;
 			noFill();
-			let alpha = map(diam, 0, 300, 255, 0);
+			let alpha = map(diam, 0, 200, 255, 0);
 			stroke(r, g, b, alpha);
-			strokeWeight(4);
-			// alpha(alpha);
+			strokeWeight(2.5);
 			let radius = diam / 2;
 			beginShape();
-			for (let i = 0; i <= 360; i++) {
-				let angle = radians(i);
-				let noiseScale = map(noise(i * 0.006, yoff), 0, 1, -10, 10);
-				let xPoint = radius * cos(angle);
-				let yPoint = radius * sin(angle) + noiseScale;
+			for (let i = 0; i <= TWO_PI; i+=0.006) {
+				let xoff = map(cos(i + phase), -1, 1, 0, maxNoise);
+				let yoff =  map(sin(i), -1, 1, 0, maxNoise);
+				let noiseScale = map(noise(xoff, yoff, zoff), 0, 1, 10, 20);
+				let xPoint = radius * cos(i) + noiseScale;
+				let yPoint = radius * sin(i) + noiseScale;
 				vertex(xPoint, yPoint);
+				phase += 0.006;
+
+				// vertex(xPoint, yPoint);
 			}
 			endShape(CLOSE);
-			yoff += 0.03;
+			// yoff += 0.03;
+			zoff += 0.02;
 		}
 	}
-	outerDiam += 4;
+	outerDiam += 3.5;
 	// console.log("ripple drawn");
 }
 
