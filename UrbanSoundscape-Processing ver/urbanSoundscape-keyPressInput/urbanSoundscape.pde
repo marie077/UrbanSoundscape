@@ -14,7 +14,7 @@ int variance = 10;
 int centerX = 960;
 int centerY = 540;
 
-int flipBackTime = 10000;
+int flipBackTime = 15000;
 int lastFlipTime = 0;
 
 color defaultRGB = color(255, 255, 255);
@@ -28,12 +28,15 @@ boolean fadeOutBgL = false;  // Flag to control the fade-out of bgL
 boolean keepThemeColor = false;  // Flag to keep the theme color active
 boolean visualLocked = false;
 
+boolean startFading = false; // Add this variable to track if fading should start
+int fadeDelay = 4000; // 4 seconds delay before fading starts
+int fadeStartTime; // Variable to store the time when fading started
+
 Venue aquarium, civil, coke, football, park, wheel;
 
 
 Venue selectedVenue = null;
-
-
+int circleA = 255;
 
 void setup() {
   size(1920, 1080);
@@ -88,7 +91,7 @@ void draw() {
     if (visualLocked && v == selectedVenue) {
       image(v.current, v.pcX, v.pcY);
       if (!rippling && fadeAlpha == 255) {  // Only fade in if background is fully visible
-        circleAlpha += 5; // Gradually increase alpha to fade in
+        circleAlpha += 10; // Gradually increase alpha to fade in
         circleAlpha = constrain(circleAlpha, 0, 255); // Ensure alpha stays within bounds
       }
       color circleColor = lerpColor(defaultRGB, v.RGB, circleAlpha / 255);
@@ -188,11 +191,12 @@ void breathingCircle(Venue v, color c) {
     fill(red(c), green(c), blue(c), alpha);
     circle(v.cX, v.cY, diameter + increment);
   }
+  
+    fill(c, 10);
 
-  // Draw the main circle
-  fill(c, 10);
-  noStroke();
-  circle(v.cX, v.cY, diameter);
+  //// Draw the main circle
+    noStroke();
+    circle(v.cX, v.cY, diameter);
 }
 
 void ripple(Venue v, color c, int s) {
