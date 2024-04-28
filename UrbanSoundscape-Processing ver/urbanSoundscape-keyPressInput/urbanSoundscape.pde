@@ -52,12 +52,10 @@ void draw() {
   // Handle the ripple effect and initiate fading
   if (rippling && selectedVenue != null) {
     ripple(selectedVenue, selectedVenue.RGB, rippleMult);
-    //if (!selectedVenue.audioPlayed()) {
-    //    selectedVenue.sound.play();
-    //    selectedVenue.setAudioBool(true);
-    //}
-    
-    selectedVenue.sound.play();
+    if (!selectedVenue.audioPlayed()) {
+        selectedVenue.sound.play();
+        selectedVenue.setAudioBool(true);
+    }
 
     rippleMult += 10; // Adjust size decrease rate
     fadeAlpha = int(map(rippleMult, 0, maxRippleMult, 0, 255));  // Control fade in for bgL
