@@ -39,7 +39,8 @@ Venue selectedVenue = null;
 int circleA = 255;
 
 void setup() {
-  size(1920, 1080);
+  //size(1920, 1080);
+  fullScreen(2);
   frameRate(60);
   
   preload();
@@ -221,7 +222,8 @@ void preload() {
   // Load the map to PImage bg
   bgL = loadImage("background_light.png");
   bgD = loadImage("background_dark.png");
-  
+  //bgL.resize(width, height);
+  //bgD.resize(width, height);
   // Load positions, pins, file path, and theme color to Venue objects 
   // Aquarium
   aquarium = new Venue("aquarium", 0);
@@ -240,10 +242,11 @@ void preload() {
   // World of Coke
   coke = new Venue("coke", 2);
   coke.setCPos(927.7, 162.3);
-  coke.setPCPos(928, 148);
+  coke.setPCPos(400, 0);
   coke.setPath("postcards/coke-front.png", "postcards/coke-back.png", "sounds/chord3.mp3", this);
   coke.setRGB(244, 0, 0);
-  
+  coke.resizePostcard(519, 309);
+
   // College Football Hall of Fame
   football = new Venue("football", 3);
   football.setCPos(1279.7, 828.3);
@@ -283,6 +286,13 @@ class Venue {
     name = n;
     pin = iP;
     isFlipped = false;
+  }
+  
+  void resizePostcard(int newWidth, int newHeight) {
+  println("pre-resize: " + front.width + ", " + front.height);
+  front.resize(newWidth, newHeight);
+  back.resize(newWidth, newHeight);
+  println("post-resize: " + front.width + ", " + front.height);
   }
 
   boolean audioPlayed() {

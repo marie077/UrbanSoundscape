@@ -37,7 +37,8 @@ Venue selectedVenue = null;
 
 
 void setup() {
-  size(1920, 1080);
+  //size(1920, 1080);
+  fullScreen(2);
   frameRate(60);
   
   preload();
@@ -286,6 +287,13 @@ class Venue {
     name = n;
     pin = iP;
     isFlipped = false;
+  }
+  
+   void resizePostcard(int newWidth, int newHeight) {
+  println("pre-resize: " + front.width + ", " + front.height);
+  front.resize(newWidth, newHeight);
+  back.resize(newWidth, newHeight);
+  println("post-resize: " + front.width + ", " + front.height);
   }
 
   boolean audioPlayed() {
